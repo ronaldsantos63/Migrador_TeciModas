@@ -26,18 +26,8 @@ class thread_produtos(QThread):
             self.update_info.emit("Processando Produtos...")
 
             query = QSqlQuery()
-            script_file = QFile("scripts/produtos.sql")
-            script_file.open(QFile.ReadOnly)
-
-            query_grupo = QSqlQuery()
-            script_grupo = QFile("scripts/grupo.sql")
-            script_grupo.open(QFile.ReadOnly)
-
-            query_subgrupo = QSqlQuery()
-            script_subgrupo = QFile("scripts/subgrupo.sql")
-            script_subgrupo.open(QIODevice.ReadOnly)
-
-            if not query.exec_(str(script_file.readAll())):
+            subquery = QSqlQuery()
+            if not query.exec_("select * from ite"):
                 print("Nao executou o script")
                 print(u"Erro: {0}".format(query.lastError().text()))
                 self.update_alerta.emit('c', u'Atenção', u'Causa do erro: {0}\nquery que deu erro: {1}'
@@ -49,6 +39,9 @@ class thread_produtos(QThread):
                 pasta = QDir("arquivos")
                 arq_produtos = QFile(pasta.path() + "/SYSPPRO.txt")
                 arq_secao = QFile(pasta.path() + "/SYSPSEC.txt")
+                arq_grupo = QFile(pasta.path() + "/SYSPGRP.txt")
+                arq_subgrupo = QFile(pasta.path() + "/SYSPSBG.txt")
+                arq_codbarra = QFile(pasta.path() + "/SYSPAUX.txt")
 
                 if not pasta.exists(pasta.path()):
                     pasta.mkpath(pasta.path())
@@ -56,9 +49,18 @@ class thread_produtos(QThread):
                     arq_produtos.remove()
                 if arq_secao.exists():
                     arq_secao.remove()
+                if arq_grupo.exists():
+                    arq_grupo.remove()
+                if arq_subgrupo.exists():
+                    arq_subgrupo.remove()
+                if arq_codbarra.exists():
+                    arq_codbarra.remove()
 
                 arq_produtos.open(QFile.WriteOnly)
                 arq_secao.open(QFile.WriteOnly)
+                arq_grupo.open(QFile.WriteOnly)
+                arq_subgrupo.open(QFile.WriteOnly)
+                arq_codbarra.open(QFile.WriteOnly)
                 # ###############( Fim da verificacao dos arquivos )####################
 
                 self.update_pbar_max.emit(query.size())
