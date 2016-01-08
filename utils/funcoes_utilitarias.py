@@ -3,8 +3,8 @@
 
 def remove_caracteres(texto):
     try:
-        texto = str(texto)
-        new_txt = texto.strip()
+        texto = str(texto).upper()
+        new_txt = texto.strip().upper()
         if len(new_txt) == 0:
             return [False, "Foi passado um texto em branco"]
 
@@ -66,9 +66,12 @@ def remove_caracteres(texto):
         while new_txt.__contains__("┌") or new_txt.__contains__("╔"):
             new_txt = new_txt.replace("╔", " ")
             new_txt = new_txt.replace("┌", "U")
+        while new_txt.__contains__("Ã§"):
+            new_txt = new_txt.replace("Ã§", "C")
+        while new_txt.__contains__("Ã¡"):
+            new_txt = new_txt.replace("Ã¡", "A")
         while new_txt.__contains__("  "):
             new_txt = new_txt.replace("  ", " ")
-
         new_txt = new_txt.strip()
 
         return [True, new_txt]
