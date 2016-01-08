@@ -3,11 +3,12 @@
 
 from datetime import datetime
 from time import strptime
+
 from PyQt4.QtCore import *
 from PyQt4.QtSql import *
 
-
 from utils.funcoes_utilitarias import *
+
 
 class thread_produtos(QThread):
     update_info = pyqtSignal(str)
@@ -27,6 +28,19 @@ class thread_produtos(QThread):
             query = QSqlQuery()
             script_file = QFile("scripts/produtos.sql")
             script_file.open(QFile.ReadOnly)
+
+            query_tributacao = QSqlQuery()
+            script_tributacao = QFile("scripts/tributacao.sql")
+            script_tributacao.open(QFile.ReadOnly)
+
+            query_grupo = QSqlQuery()
+            script_grupo = QFile("scripts/grupo.sql")
+            script_grupo.open(QFile.ReadOnly)
+
+            query_subgrupo = QSqlQuery()
+            script_subgrupo = QFile("scripts/subgrupo.sql")
+            script_subgrupo.open(QIODevice.ReadOnly)
+
             if not query.exec_(str(script_file.readAll())):
                 print("Nao executou o script")
                 print(u"Erro: {0}".format(query.lastError().text()))
@@ -174,7 +188,7 @@ class thread_produtos(QThread):
         except Exception as e:
             print("Erro: {0}".format(e))
             print("Ulimo codigo: {0}".format(codigo))
-            self.update_alerta.emit("c", u"Critical Erro",  u"ultimo codigo: {3}\nCausa do erro: {0}\n"
-                                                            u"StackTrace: {1}\nQuery: {2}"
+            self.update_alerta.emit("c", u"Critical Erro", u"ultimo codigo: {3}\nCausa do erro: {0}\n"
+                                                           u"StackTrace: {1}\nQuery: {2}"
                                     .format(query.lastError().text(), e, query.lastQuery(), codigo))
             self.terminate()

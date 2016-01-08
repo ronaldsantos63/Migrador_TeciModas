@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-#encoding: utf-8
+# encoding: utf-8
 
 from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 
 from controle.conexao import *
-
 from interfaces_ui.frm_config import *
+
 
 class form_conf(QDialog, Ui_frm_config):
     def __init__(self, parent, conn):
@@ -33,10 +32,10 @@ class form_conf(QDialog, Ui_frm_config):
             QMessageBox.warning(self, 'Aviso', u"Por favor selecione uma pasta válida")
 
     def testar(self):
-        #print("Camiho: {0}".format(self.txt_banco.text()))
+        # print("Camiho: {0}".format(self.txt_banco.text()))
         result = self.conn.conectar(db=self.txt_banco.text())
         if result[0]:
-            QMessageBox.information(self, u"Informação",'Conectado com sucesso!' )
+            QMessageBox.information(self, u"Informação", 'Conectado com sucesso!')
         else:
             QMessageBox.warning(self, u"Alerta", result[1])
             self.conn.desconectar()

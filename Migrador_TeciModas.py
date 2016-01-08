@@ -1,19 +1,17 @@
 #!/usr/bin/env python
-#encoding: utf-8
+# encoding: utf-8
 from processos.thread_grupos import thread_grupos
 from processos.thread_produtos import thread_produtos
 
 __author__ = 'ronald'
 
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 from sys import argv, exit
 
 from interfaces_ui.frm_principal import *
 from formularios.form_config import *
 
 from controle.conexao import *
+
 
 class Migrador(QDialog, Ui_frm_principal):
     def __init__(self, parent=None):
@@ -66,7 +64,6 @@ class Migrador(QDialog, Ui_frm_principal):
                 th_grp.update_regtotal.connect(self.lbl_reg_total.setText)
                 if not self.check_produtos.isChecked():
                     th_grp.start()
-
 
     def alertas(self, tipo='a', titulo="", msg=""):
         if tipo == 'a':

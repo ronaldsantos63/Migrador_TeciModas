@@ -3,9 +3,7 @@
 __author__ = 'RONALD'
 
 from PyQt4.QtCore import *
-from PyQt4.QtSql import *
 
-from utils.funcoes_utilitarias import *
 
 class thread_fornecedores(QThread):
     update_info = pyqtSignal(str)

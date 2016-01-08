@@ -17,11 +17,14 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+
 
 class Ui_frm_principal(object):
     def setupUi(self, frm_principal):
@@ -88,7 +91,7 @@ class Ui_frm_principal(object):
         self.pbar.setObjectName(_fromUtf8("pbar"))
         self.lbl_reg_atual = QtGui.QLabel(self.quadro_botoes)
         self.lbl_reg_atual.setGeometry(QtCore.QRect(0, 10, 91, 16))
-        self.lbl_reg_atual.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lbl_reg_atual.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.lbl_reg_atual.setObjectName(_fromUtf8("lbl_reg_atual"))
         self.lbl_reg_total = QtGui.QLabel(self.quadro_botoes)
         self.lbl_reg_total.setGeometry(QtCore.QRect(100, 10, 81, 16))
@@ -116,9 +119,11 @@ class Ui_frm_principal(object):
         self.retranslateUi(frm_principal)
         QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.check_produtos.setChecked)
         QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.check_grupos.setChecked)
-        QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.check_fornecedor.setChecked)
+        QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")),
+                               self.check_fornecedor.setChecked)
         QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.check_cliente.setChecked)
-        QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.check_conta_receber.setChecked)
+        QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("clicked(bool)")),
+                               self.check_conta_receber.setChecked)
         QtCore.QObject.connect(self.btn_sair, QtCore.SIGNAL(_fromUtf8("clicked()")), frm_principal.close)
         QtCore.QMetaObject.connectSlotsByName(frm_principal)
 
@@ -140,10 +145,10 @@ class Ui_frm_principal(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtGui.QApplication(sys.argv)
     frm_principal = QtGui.QDialog()
     ui = Ui_frm_principal()
     ui.setupUi(frm_principal)
     frm_principal.show()
     sys.exit(app.exec_())
-

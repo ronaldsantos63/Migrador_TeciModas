@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#encoding: utf-8
+# encoding: utf-8
 __author__ = 'ronald'
 
 from PyQt4 import QtCore, QtGui
@@ -14,6 +14,8 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:

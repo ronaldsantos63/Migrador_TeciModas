@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-#encoding: utf-8
+# encoding: utf-8
 __author__ = 'ronald'
-
 
 from PyQt4.QtGui import QLineEdit, QToolButton, QIcon, QHBoxLayout, QFileDialog, QApplication, QMessageBox
 from PyQt4.QtCore import Qt, QDir, QFile
@@ -11,6 +10,7 @@ class LineEdit_BtLocate(QLineEdit):
     '''
     Classe Personalizada do QLineEdit com botao para localizar pastas e ou arquivos
     '''
+
     def __init__(self, parent=None, so_pasta=False, filtro=None):
         '''
         Contrutor da classe personalizada
@@ -44,8 +44,8 @@ class LineEdit_BtLocate(QLineEdit):
     def abrir_arquivo(self):
         if self.so_pasta:
             pasta = QFileDialog.getExistingDirectory(self, "Localizar", ".")
-            #print("arquivo: {0}".format(pasta))
-            #print("Tipo: {0}".format(type(pasta)))
+            # print("arquivo: {0}".format(pasta))
+            # print("Tipo: {0}".format(type(pasta)))
             if QDir(pasta).exists():
                 self.setText(pasta)
             else:

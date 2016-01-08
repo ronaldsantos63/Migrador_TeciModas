@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#encoding: utf-8
+# encoding: utf-8
 __author__ = 'ronald'
 
 from PyQt4.QtCore import *
@@ -71,7 +71,7 @@ class thread_grupos(QThread):
         except Exception as e:
             print("Erro: {0}".format(e))
             print("Ulimo codigo: {0}".format(codigo))
-            self.update_alerta.emit("c", u"Critical Erro",  u"ultimo codigo: {3}\nCausa do erro: {0}\n"
-                                                            u"StackTrace: {1}\nQuery: {2}"
+            self.update_alerta.emit("c", u"Critical Erro", u"ultimo codigo: {3}\nCausa do erro: {0}\n"
+                                                           u"StackTrace: {1}\nQuery: {2}"
                                     .format(query.lastError().text(), e, query.lastQuery(), codigo))
             self.terminate()

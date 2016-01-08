@@ -1,0 +1,1 @@
+select cod, des from dep

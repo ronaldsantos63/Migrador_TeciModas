@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#encoding: utf-8
+# encoding: utf-8
 __author__ = 'ronald'
 
 from PyQt4.QtSql import *
@@ -9,7 +9,6 @@ from PyQt4.QtCore import *
 class conexao(QObject):
     def __init__(self, parent=None):
         self.database = None
-
 
     def conectar(self, db=None):
         if self.database is None:
@@ -41,7 +40,6 @@ class conexao(QObject):
         else:
             print("Conectado com sucesso!")
             return [True, "Conectado com sucesso!"]
-
 
     def desconectar(self):
         self.database.removeDatabase("QODBC")
