@@ -27,6 +27,7 @@ class thread_produtos(QThread):
 
             query = QSqlQuery()
             subquery = QSqlQuery()
+            subquery2 = QSqlQuery()
             if not query.exec_("select * from ite"):
                 print("Nao executou o script")
                 print(u"Erro: {0}".format(query.lastError().text()))
@@ -63,96 +64,182 @@ class thread_produtos(QThread):
                 arq_codbarra.open(QFile.WriteOnly)
                 # ###############( Fim da verificacao dos arquivos )####################
 
-                self.update_pbar_max.emit(query.size())
-                self.update_regtotal.emit("/ {0}".format(query.size()))
+                self.update_pbar_max.emit(query.numRowsAffected())
+                self.update_regtotal.emit("/ {0}".format(query.numRowsAffected()))
 
                 cont = 0
                 while query.next():
                     cont += 1
                     self.update_regatual.emit(str(cont))
-                    tmp_desc = str(QString.toUtf8(query.value(1).toString()))
-                    tmp_descrdz = str(QString.toUtf8(query.value(2).toString()))
-                    print(tmp_desc)
-                    print(tmp_descrdz)
+
                     codigo = query.value(0).toInt()[0]
+
+                    tmp_desc = str(QString.toUtf8(query.value(19).toString()))
+                    tmp_descrdz = tmp_desc
+
+                    ##Executando subquery's para pegar as informacoes complementares
+                    ####
+                    ########( Pegando tributacao dos produtos )########
+                    codTrb = query.value(13).toInt()[0]
+                    if subquery.exec_("select siticm from trt where cod = {0}".format(codTrb)):
+                        try:
+                            print("Tem tributacao")
+                            subquery.previous()
+                            subquery.next()
+                            tmp_sitTrb = subquery.value(0).toInt()[0]
+                        except:
+                            print("OPA acontaceu alguma coisa na tributacao")
+                    else:
+                        print("Ops Nao tem tributacao")
+                        tmp_sitTrb = 0
+                    ########( Pegando Precos de Venda, comissao, custo, estoque min e max etc... )########
+                    if subquery2.exec_(
+                            "select prccus as custo, prcven1 as preco1, prcven2 as preco2, prcven3 as preco3, "
+                            "percom as comissao, perdesmax as desconto, dtaultreaven as dtultaltprc, "
+                            "locfis as end_est, estmax, estmin from kdx"
+                            " where lop = 1 and ite = {0}".format(codigo)):
+                        try:
+                            print("Tem preco!")
+                            subquery2.previous()
+                            subquery2.next()
+                            tmp_custo = subquery2.value(0).toDouble()[0]
+                            tmp_prc1 = subquery2.value(1).toDouble()[0]
+                            tmp_prc2 = subquery2.value(2).toDouble()[0]
+                            tmp_prc3 = subquery2.value(3).toDouble()[0]
+                            tmp_comissao = subquery2.value(4).toDouble()[0]
+                            tmp_descMax = subquery2.value(5).toDouble()[0]
+                            tmp_ultaltprc1 = subquery2.value(6).toString()
+                            tmp_end_est = subquery2.value(7).toString()
+                            tmp_estmax = subquery2.value(8).toDouble()[0]
+                            tmp_estmin = subquery2.value(9).toDouble()[0]
+                        except:
+                            print("OPA Aconteceu alguma coisa nos precos")
+                    else:
+                        print("Ops nao tem preco")
+                        tmp_custo = 0.00
+                        tmp_prc1 = 0.00
+                        tmp_prc2 = 0.00
+                        tmp_prc3 = 0.00
+                        tmp_comissao = 0.00
+                        tmp_descMax = 0.00
+                        tmp_ultaltprc1 = datetime.now()
+                        tmp_estmax = 0.00
+                        tmp_estmin = 0.00
+                    ##Fim da execucao das subquery's
+                    print(tmp_desc)
+                    print(remove_caracteres(tmp_desc)[1])
                     descricao = remove_caracteres(tmp_desc)[1]
-                    descricao_reduzida = remove_caracteres(tmp_descrdz)[1]
-                    cod_sec = query.value(3).toInt()[0]
-                    paga_comissao = query.value(4).toString()
-                    tributacao = query.value(5).toString()
-                    peso_variavel = query.value(6).toString()
-                    cod_impressao = query.value(7).toInt()[0]
-                    print("Codigo Impressao: {}".format(cod_impressao))
-                    comissao1 = query.value(8).toDouble()[0]
-                    comissao2 = query.value(9).toDouble()[0]
-                    comissao3 = query.value(10).toDouble()[0]
-                    desconto = query.value(11).toDouble()[0]
-                    preco1 = query.value(12).toDouble()[0]
-                    oferta1 = query.value(13).toDouble()[0]
-                    dias_validade = query.value(14).toInt()[0]
-                    preco_variavel = query.value(15).toString()
-                    frente_loja = query.value(16).toString()
-                    min_estoque = query.value(17).toDouble()[0]
-                    max_estoque = query.value(18).toDouble()[0]
-                    cod_forn = query.value(19).toInt()[0]
-                    preco2 = query.value(20).toDouble()[0]
-                    oferta2 = query.value(21).toDouble()[0]
-                    preco3 = query.value(22).toDouble()[0]
-                    oferta3 = query.value(23).toDouble()[0]
-                    tabela_a = query.value(24).toString()
-                    tipo_bonificacao = query.value(25).toString()
-                    fator_bonificacao = query.value(26).toDouble()[0]
-                    data_alteracao = query.value(27).toString()
-                    qtd_etiquetas = query.value(28).toInt()[0]
-                    und_venda = query.value(29).toString()
-                    produto_alterado = query.value(30).toString()
-                    custo = query.value(31).toDouble()[0]
-                    controla_serie = query.value(32).toString()
-                    controla_estoque = query.value(33).toString()
-                    permite_desconto = query.value(34).toString()
-                    especializacao = query.value(35).toString()
-                    composicao = query.value(36).toString()
-                    balanca = query.value(37).toString()
-                    controla_validade = query.value(38).toString()
-                    margem1 = query.value(39).toDouble()[0]
-                    margem2 = query.value(40).toDouble()[0]
-                    margem3 = query.value(41).toDouble()[0]
-                    mix = query.value(42).toString()
+                    descricao_reduzida = descricao
+                    cod_sec = 01
+                    if tmp_comissao > 0:
+                        paga_comissao = 'S'
+                    else:
+                        paga_comissao = "N"
+
+                    # Logica para pegar a tributacao correta dos produtos
+                    if tmp_sitTrb == 1:
+                        tributacao = "T17"
+                    elif tmp_sitTrb == 2:
+                        tributacao = "I00"
+                    else:
+                        tributacao = "T17"
+                    # Fim da Logica para pegar a tributacao correta dos produtos
+
+                    peso_variavel = "S"
+                    cod_impressao = 00
+                    comissao1 = tmp_comissao
+                    comissao2 = 0.00
+                    comissao3 = 0.00
+                    desconto = tmp_descMax
+                    preco1 = tmp_prc1
+                    oferta1 = 0.00
+                    dias_validade = 0
+                    preco_variavel = "N"
+                    frente_loja = "N"
+                    min_estoque = tmp_estmin
+                    max_estoque = tmp_estmax
+                    cod_forn = 0
+                    preco2 = tmp_prc2
+                    oferta2 = 0.00
+                    preco3 = tmp_prc3
+                    oferta3 = 0.00
+                    tabela_a = "0"
+                    tipo_bonificacao = "P"
+                    fator_bonificacao = 0.00
+                    try:
+                        if not isinstance(tmp_ultaltprc1, datetime):
+                            tmp = strptime(str(tmp_ultaltprc1)[0:10], "%Y-%m-%d")
+                            data_alteracao = datetime(*tmp[0:5]).strftime("%Y%m%d")
+                        else:
+                            data_alteracao = tmp_ultaltprc1.strftime("%Y%m%d")
+                    except:
+                        data_alteracao = datetime.now().strftime("%Y%m%d")
+                    qtd_etiquetas = 1
+                    und_venda = remove_caracteres(QString.toUtf8(query.value(9).toString()))[1]
+                    produto_alterado = "A"
+                    custo = tmp_custo
+                    controla_serie = "N"
+                    controla_estoque = "S"
+                    permite_desconto = "S"
+                    especializacao = "O"
+                    composicao = "N"
+                    balanca = "N"
+                    controla_validade = "N"
+                    margem1 = 0.00
+                    margem2 = 0.00
+                    margem3 = 0.00
+                    mix = ""
                     'Ajustando data'
-                    tmp = strptime(str(query.value(43).toString()), "%Y-%m-%d")
-                    data_inclusao = datetime(*tmp[0:5]).strftime("%d%m%Y")
-                    print(data_inclusao)
-                    data_forlin = query.value(44).toString()
-                    dta_ult_preco1 = query.value(45).toString()
-                    dta_ult_preco2 = query.value(46).toString()
-                    dta_ult_preco3 = query.value(47).toString()
-                    descricao_variavel = query.value(48).toString()
-                    endereco = query.value(49).toString()
-                    qtd_preco2 = query.value(50).toDouble()[0]
-                    qtd_preco3 = query.value(51).toDouble()[0]
-                    cod_grupo = query.value(52).toString()
-                    cod_subgrupo = query.value(53).toInt()[0]
-                    itens_embalagem = query.value(54).toDouble()[0]
-                    qtd_max_oferta = query.value(55).toDouble()[0]
-                    peso_bruto = query.value(56).toDouble()[0]
-                    peso_liquido = query.value(57).toDouble()[0]
-                    und_ref = query.value(58).toString()
-                    medida_ref = query.value(59).toDouble()[0]
-                    cod_genero = query.value(60).toString()
-                    complemento_descricao = query.value(61).toString()
-                    reservado1 = query.value(62).toString()
-                    und_compra = query.value(63).toString()
-                    reservado2 = query.value(64).toInt()[0]
-                    natureza = query.value(65).toInt()[0]
-                    ncm = query.value(66).toString()
-                    ncm_excecao = query.value(67).toString()
+                    try:
+                        if not isinstance(tmp_ultaltprc1, datetime):
+                            # print("Entrou no if")
+                            # print("E data a ser tratada e: {0}".format(tmp_ultaltprc1))
+                            tmp = strptime(str(tmp_ultaltprc1)[0:10], "%Y-%m-%d")
+                            # print("Agora a data esta assim: {}".format(tmp))
+                            data_inclusao = datetime(*tmp[0:5]).strftime("%d%m%Y")
+                            tmp_ultaltprc1 = data_inclusao
+                        else:
+                            # print("Entrou no else")
+                            data_inclusao = tmp_ultaltprc1.strftime("%d%m%Y")
+                            tmp_ultaltprc1 = data_inclusao
+                    except Exception as ex:
+                        # print("Caiu na excecao")
+                        # print("O erro foi: ".format(str(ex)))
+                        data_inclusao = datetime.now().strftime("%d%m%Y")
+                        tmp_ultaltprc1 = data_inclusao
+                    print("A data e: {0}".format(data_inclusao))
+                    # raw_input("Parou boi")
+                    data_forlin = ""
+                    dta_ult_preco1 = data_inclusao
+                    dta_ult_preco2 = ""
+                    dta_ult_preco3 = ""
+                    descricao_variavel = "N"
+                    endereco = tmp_end_est
+                    qtd_preco2 = 0.00
+                    qtd_preco3 = 0.00
+                    cod_grupo = query.value(1).toInt()[0]
+                    cod_subgrupo = query.value(3).toInt()[0]
+                    itens_embalagem = 1.0
+                    qtd_max_oferta = 0.00
+                    peso_bruto = 0.00
+                    peso_liquido = 0.00
+                    und_ref = "UN"
+                    medida_ref = 1.00
+                    cod_genero = ""
+                    complemento_descricao = ""
+                    reservado1 = ""
+                    und_compra = und_venda
+                    reservado2 = 0
+                    natureza = 999
+                    ncm = ""
+                    ncm_excecao = ""
 
                     linha_produto = "{0:014d}{1:45.45s}{2:20.20s}{3:02d}{4}{5}{6}{7:02d}{8:5.2f}{9:5.2f}{10:5.2f}" \
                                     "{11:5.2f}{12:13.2f}{13:13.2f}{14:03d}{15}{16}{17:13.2f}{18:13.2f}{19:04d}" \
                                     "{20:13.2f}{21:13.2f}{22:13.2f}{23:13.2f}{24}{25}{26:13.2f}{27}{28}{29:3.3s}" \
                                     "{30}{31:13.2f}{32}{33}{34}{35}{36}{37}{38}{39:7.2f}{40:7.2f}{41:7.2f}" \
                                     "{42:1.1s}{43}{44:8.8s}{45:8.8s}{46:8.8s}{47:8.8s}{48}{49:20.20s}{50:9.2f}" \
-                                    "{51:9.2f}{52:3.3s}{53:03d}{54:13.2f}{55:9.2f}{56:9.3f}{57:9.3f}{58:3.3s}" \
+                                    "{51:9.2f}{52:03d}{53:03d}{54:13.2f}{55:9.2f}{56:9.3f}{57:9.3f}{58:3.3s}" \
                                     "{59:13.2f}{60:3.3s}{61:35.35s}{62:20.20s}{63:3.3s}{64:03d}{65}{66:8.8s}" \
                                     "{67:2.2s}\n" \
                         .format(codigo, descricao, descricao_reduzida, cod_sec, paga_comissao, tributacao,
@@ -184,8 +271,8 @@ class thread_produtos(QThread):
                 self.update_alerta.emit("i", u"Informação", "Processo dos <strong>Produtos</strong> Finalizado!")
                 self.sleep(3)
         except Exception as e:
-            print("Erro: {0}".format(e))
             print("Ulimo codigo: {0}".format(codigo))
+            print("Erro: {0}".format(e))
             self.update_alerta.emit("c", u"Critical Erro", u"ultimo codigo: {3}\nCausa do erro: {0}\n"
                                                            u"StackTrace: {1}\nQuery: {2}"
                                     .format(query.lastError().text(), e, query.lastQuery(), codigo))
