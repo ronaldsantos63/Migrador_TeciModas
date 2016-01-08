@@ -29,10 +29,6 @@ class thread_produtos(QThread):
             script_file = QFile("scripts/produtos.sql")
             script_file.open(QFile.ReadOnly)
 
-            query_tributacao = QSqlQuery()
-            script_tributacao = QFile("scripts/tributacao.sql")
-            script_tributacao.open(QFile.ReadOnly)
-
             query_grupo = QSqlQuery()
             script_grupo = QFile("scripts/grupo.sql")
             script_grupo.open(QFile.ReadOnly)

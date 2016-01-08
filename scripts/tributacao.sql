@@ -1,1 +1,0 @@
-select cod, siticm from trt
