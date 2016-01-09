@@ -21,12 +21,11 @@ class thread_grupos(QThread):
 
     def run(self):
         try:
-            self.update_info.emit("Processando Produtos...")
+            self.update_info.emit("Processando Grupos...")
 
             query = QSqlQuery()
-            script_file = QFile("scripts/grupos.sql")
-            script_file.open(QFile.ReadOnly)
-            if not query.exec_(str(script_file.readAll())):
+            if not query.exec_(
+                    "select distinct grupo.cod, grupo.des from ite right join dep as grupo on grupo.cod = ite.dep"):
                 print("Nao executou o script")
                 print(u"Erro: {0}".format(query.lastError().text()))
                 self.update_alerta.emit('c', u'Atenção', u'Causa do erro: {0}\nquery que deu erro: {1}'
@@ -51,9 +50,9 @@ class thread_grupos(QThread):
                     cont += 1
                     self.update_regatual.emit(str(cont))
 
-                    codigo = cont
+                    codigo = query.value(0).toInt()[0]
                     codsecao = 99
-                    descricao = remove_caracteres(str(QString.toUtf8(query.value(0).toString())))[1]
+                    descricao = remove_caracteres(str(QString.toUtf8(query.value(1).toString())))[1]
 
                     linha = "{0:02d}{1:03d}{2:30.30s}\n".format(
                         codsecao, codigo, descricao
