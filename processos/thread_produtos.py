@@ -40,8 +40,6 @@ class thread_produtos(QThread):
                 pasta = QDir("arquivos")
                 arq_produtos = QFile(pasta.path() + "/SYSPPRO.txt")
                 arq_secao = QFile(pasta.path() + "/SYSPSEC.txt")
-                arq_grupo = QFile(pasta.path() + "/SYSPGRP.txt")
-                arq_subgrupo = QFile(pasta.path() + "/SYSPSBG.txt")
                 arq_codbarra = QFile(pasta.path() + "/SYSPAUX.txt")
 
                 if not pasta.exists(pasta.path()):
@@ -50,22 +48,19 @@ class thread_produtos(QThread):
                     arq_produtos.remove()
                 if arq_secao.exists():
                     arq_secao.remove()
-                if arq_grupo.exists():
-                    arq_grupo.remove()
-                if arq_subgrupo.exists():
-                    arq_subgrupo.remove()
                 if arq_codbarra.exists():
                     arq_codbarra.remove()
 
                 arq_produtos.open(QFile.WriteOnly)
                 arq_secao.open(QFile.WriteOnly)
-                arq_grupo.open(QFile.WriteOnly)
-                arq_subgrupo.open(QFile.WriteOnly)
                 arq_codbarra.open(QFile.WriteOnly)
                 # ###############( Fim da verificacao dos arquivos )####################
 
-                self.update_pbar_max.emit(query.numRowsAffected())
-                self.update_regtotal.emit("/ {0}".format(query.numRowsAffected()))
+                subquery.exec_("select count(*) from ite")
+                subquery.next()
+                total_prod = subquery.value(0).toInt()[0]
+                self.update_pbar_max.emit(total_prod)
+                self.update_regtotal.emit("/ {0}".format(total_prod))
 
                 cont = 0
                 while query.next():
@@ -130,7 +125,7 @@ class thread_produtos(QThread):
                     print(remove_caracteres(tmp_desc)[1])
                     descricao = remove_caracteres(tmp_desc)[1]
                     descricao_reduzida = descricao
-                    cod_sec = 01
+                    cod_sec = 99
                     if tmp_comissao > 0:
                         paga_comissao = 'S'
                     else:
