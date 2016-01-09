@@ -2,6 +2,7 @@
 # encoding: utf-8
 from processos.thread_grupos import thread_grupos
 from processos.thread_produtos import thread_produtos
+from processos.thread_subgrupos import thread_subgrupos
 
 __author__ = 'ronald'
 
@@ -44,6 +45,7 @@ class Migrador(QDialog, Ui_frm_principal):
         else:
             th_prod = thread_produtos(self)
             th_grp = thread_grupos(self)
+            th_sgrp = thread_subgrupos(self)
             if self.check_produtos.isChecked():
                 th_prod.update_pbar_max.connect(self.pbar.setMaximum)
                 th_prod.update_pbar_value.connect(self.pbar.setValue)
@@ -64,6 +66,18 @@ class Migrador(QDialog, Ui_frm_principal):
                 th_grp.update_regtotal.connect(self.lbl_reg_total.setText)
                 if not self.check_produtos.isChecked():
                     th_grp.start()
+                if self.check_subgrupos.isChecked():
+                    th_grp.finished.connect(th_sgrp.start)
+                    th_grp.terminated.connect(th_sgrp.start)
+            if self.check_subgrupos.isChecked():
+                th_sgrp.update_pbar_max.connect(self.pbar.setMaximum)
+                th_sgrp.update_pbar_value.connect(self.pbar.setValue)
+                th_sgrp.update_info.connect(self.lbl_info.setText)
+                th_sgrp.update_alerta.connect(self.alertas)
+                th_sgrp.update_regatual.connect(self.lbl_reg_atual.setText)
+                th_sgrp.update_regtotal.connect(self.lbl_reg_total.setText)
+                if not self.check_produtos.isChecked() and not self.check_grupos.isChecked():
+                    th_sgrp.start()
 
     def alertas(self, tipo='a', titulo="", msg=""):
         if tipo == 'a':
