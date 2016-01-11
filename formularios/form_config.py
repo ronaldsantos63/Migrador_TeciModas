@@ -17,6 +17,7 @@ class form_conf(QDialog, Ui_frm_config):
         self.bt_salvar.clicked.connect(self.salvar)
 
         self.on_form_load()
+        self.pai = parent
 
     def on_form_load(self):
         conf = QSettings('Migrador_TeciModas', 'connection')
@@ -28,6 +29,8 @@ class form_conf(QDialog, Ui_frm_config):
         if pasta.exists(self.txt_banco.text()):
             conf.setValue('db', self.txt_banco.text())
             QMessageBox.information(self, 'Info', "Salvo com sucesso!")
+            QMessageBox.warning(self, "Alerta", u"A aplicação será fechada para validar as configurações!")
+            self.pai.close()
         else:
             QMessageBox.warning(self, 'Aviso', u"Por favor selecione uma pasta válida")
 
